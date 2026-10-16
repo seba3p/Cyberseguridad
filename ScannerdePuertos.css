@@ -1,0 +1,33 @@
+using System;
+using System.Net.Sockets;
+using System.Threading.Tasks;
+class Program
+{
+    static async Task Main()
+    {
+        string equipo = "aca_va_tu_ip";
+        int [] puertos = { 22, 80, 443, 3306, 8080 };
+        Console.WriteLine($"Escaneando puertos en {equipo}...");
+        foreach(int puerto in puertos)
+        {
+            using (TcpClient cliente = new TcpClient())
+            {
+                try
+                {
+                    await cliente.ConnectAsync(equipo, puerto)
+                    .WaitAsync(TimeSpan.FromMilliseconds(15000));
+                    Console.WriteLine($"Puerto {puerto}: ABIERTO");
+                }
+                catch (TimeoutException)
+                {
+                    Console.WriteLine($"Puerto {puerto}: Sin respuesta");
+                }
+                catch (SocketException)
+                {
+                Console.WriteLine($"Puerto {puerto}: Cerrado o inaccesible");
+                }
+            }
+        }
+        Console.WriteLine("Escaneo terminado.");
+    }
+}
